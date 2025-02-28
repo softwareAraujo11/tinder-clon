@@ -1,0 +1,20 @@
+{
+  "name": "tinderclon",
+  "version": "1.0.0",
+  "description": "Proyecto Tinder",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/softwareAraujo11/tinder-clon.git"
+  },
+  "author": "Felipe Araujo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/softwareAraujo11/tinder-clon/issues"
+  },
+  "homepage": "https://github.com/softwareAraujo11/tinder-clon#readme"
+}
