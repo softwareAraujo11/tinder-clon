@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Proyecto Tinder",
   "main": "index.js",
-  "type": "module",
   "scripts": {
+    "dev": "node --watch index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/softwareAraujo11/tinder-clon/issues"
   },
-  "homepage": "https://github.com/softwareAraujo11/tinder-clon#readme"
+  "homepage": "https://github.com/softwareAraujo11/tinder-clon#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
 }
