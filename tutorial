@@ -1,0 +1,60 @@
+- para crear un usuario:
+POST 
+localhost:3000/api/users
+
+{
+  "name": "Juan Pérez",
+  "email": "juanperez@gmail.com",
+  "password": "123"
+}
+
+{
+  "name": "andres torres",
+  "email": "andrestorres@gmail.com",
+  "password": "456"
+}
+
+{
+  "name": "felipe araujo",
+  "email": "felipearaujo@gmail.com",
+  "password": "789"
+}
+
+{
+  "name": "daniel escobar",
+  "email": "danielescobar@gmail.com",
+  "password": "321"
+}
+
+- para hacer login:
+POST 
+localhost:3000/api/auth/login
+
+{
+  "email": "juanperez@gmail.com",
+  "password": "123"
+}
+
+- para dar like a otro usuario
+POST 
+localhost:3000/api/swipes
+
+{
+  "userId": 1,
+  "targetUserId": 2,
+  "action": "like"
+}
+
+{
+  "userId": 2,
+  "targetUserId": 1,
+  "action": "like"
+}
+
+- para mostrar los usuarios
+GET 
+localhost:3000/api/users
+
+- para mostrar los matches
+GET 
+localhost:3000/api/matches
