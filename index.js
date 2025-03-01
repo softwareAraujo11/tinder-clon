@@ -1,17 +1,21 @@
+// index.js
 const express = require('express');
-
-const usersRoutes = require('./routes/users')
-
+const usersRoutes = require('./routes/users');
+const authRoutes = require('./routes/auth');
+const swipesRoutes = require('./routes/swipes');
+const matchesRoutes = require('./routes/matches');
 
 const app = express();
 const PORT = 3000;
 
-app.get('/hello_world', (req, res) =>{
-    res.send("Hey this is my endpoint");
-});
+app.use(express.json()); // Middleware para procesar JSON
 
-app.use('/api', usersRoutes);
+// Rutas
+app.use('/api/users', usersRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/swipes', swipesRoutes);
+app.use('/api/matches', matchesRoutes);
 
-app.listen(PORT, ()=>{
+app.listen(PORT, () => {
     console.log("Express.js App is running at port: " + PORT);
 });

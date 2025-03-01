@@ -1,8 +1,9 @@
+// routes/users.js
 const express = require('express');
-const {getUsers} =  require('../controllers/users');
-
+const { getUsers, registerUser } = require('../controllers/users');
 const router = express.Router();
 
-router.get('/users', getUsers);
+router.get('/', getUsers); // Obtener usuarios disponibles
+router.post('/', registerUser); // Registrar usuario
 
 module.exports = router;

@@ -1,15 +1,15 @@
-const getUsers = (req, res) => {
-  const users = [
-    { name: "pepito perez", email: "pepitoperez123@gmail.com" },
-    { name: "pepito perez", email: "pepitoperez123@gmail.com" },
-    { name: "pepito perez", email: "pepitoperez123@gmail.com" },
-    { name: "pepito perez", email: "pepitoperez123@gmail.com" },
-    { name: "pepito perez", email: "pepitoperez123@gmail.com" },
-  ];
+// controllers/users.js
+let users = [];
 
-  res.json(users);
+const getUsers = (req, res) => {
+    res.json(users);
 };
 
-module.exports = {
-    getUsers
-}
+const registerUser = (req, res) => {
+    const { name, email, password } = req.body;
+    const newUser = { id: users.length + 1, name, email, password };
+    users.push(newUser);
+    res.status(201).json(newUser);
+};
+
+module.exports = { getUsers, registerUser, users };
