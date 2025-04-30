@@ -1,23 +1,17 @@
 // controllers/matches.js
 
-/**
- * Importación del módulo de swipes, donde se almacenan los matches en memoria.
- */
-const { matches } = require('./swipes');
+const Match = require('../models/Match');
+const User = require('../models/User');
 
-/**
- * @function getMatches
- * @desc    Obtiene la lista de matches entre usuarios que se han dado "like" mutuamente.
- * @route   GET /api/matches
- * @access  Público
- * @returns {Object} Lista de matches en formato JSON.
- *          - `matches`: Array de objetos con los usuarios emparejados.
- *              - `user1`: ID del primer usuario del match.
- *              - `user2`: ID del segundo usuario del match.
- */
-const getMatches = (req, res) => {
+const getMatches = async (req, res) => {
+  try {
+    const matches = await Match.find()
+      .populate({ path: 'user1Id', select: '-password', foreignField: 'id', localField: 'user1Id' })
+      .populate({ path: 'user2Id', select: '-password', foreignField: 'id', localField: 'user2Id' });
     res.json({ matches });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-// Exportación de la función para su uso en el router
 module.exports = { getMatches };

@@ -1,60 +1,71 @@
-- para crear un usuario:
-POST 
-localhost:3000/api/users
-
+Dirección para hacer la prueba: http://localhost:3000/api/users
+Metodo Post
+- Crear usuarios uno a uno
 {
-  "name": "Juan Pérez",
-  "email": "juanperez@gmail.com",
-  "password": "123"
+  "name": "Usuario1",
+  "age": 30,
+  "gender": "male",
+  "location": "Bogotá",
+  "profilePicture": "url/img1.jpg",
+  "email": "usuario1@example.com",
+  "password": "password123"
+}
+{
+  "name": "Usuario2",
+  "age": 25,
+  "gender": "female",
+  "location": "Medellín",
+  "profilePicture": "url/img2.jpg",
+  "email": "usuario2@example.com",
+  "password": "password456"
+}
+{
+  "name": "Usuario3",
+  "age": 28,
+  "gender": "male",
+  "location": "Cali",
+  "profilePicture": "url/img3.jpg",
+  "email": "usuario3@example.com",
+  "password": "password789"
+}
+{
+  "name": "Usuario4",
+  "age": 35,
+  "gender": "female",
+  "location": "Barranquilla",
+  "profilePicture": "url/img4.jpg",
+  "email": "usuario4@example.com",
+  "password": "password321"
 }
 
+- Para hacer login:
+Dirección para hacer la prueba: http://localhost:3000/api/auth/login
+Metodo POST
 {
-  "name": "andres torres",
-  "email": "andrestorres@gmail.com",
-  "password": "456"
+  "email": "usuario1@example.com",
+  "password": "password123"
 }
 
+- Para dar like a otro usuario:
+Dirección para hacer la prueba: http://localhost:3000/api/swipes
+Metodo POST
+Uno a uno
 {
-  "name": "felipe araujo",
-  "email": "felipearaujo@gmail.com",
-  "password": "789"
+  "userId": "Id del usuario 1",
+  "targetUserId": "Id del usuario 2",
+  "action": "like"
 }
-
 {
-  "name": "daniel escobar",
-  "email": "danielescobar@gmail.com",
-  "password": "321"
-}
-
-- para hacer login:
-POST 
-localhost:3000/api/auth/login
-
-{
-  "email": "juanperez@gmail.com",
-  "password": "123"
-}
-
-- para dar like a otro usuario
-POST 
-localhost:3000/api/swipes
-
-{
-  "userId": 1,
-  "targetUserId": 2,
+  "userId": "Id del usuario 2",
+  "targetUserId": "Id del usuario 1",
   "action": "like"
 }
 
-{
-  "userId": 2,
-  "targetUserId": 1,
-  "action": "like"
-}
+- Para mostrar los usuarios registrados:
 
-- para mostrar los usuarios
-GET 
-localhost:3000/api/users
+Dirección para hacer la prueba: http://localhost:3000/api/users
+Metodo GET
+- Para mostrar los matches:
 
-- para mostrar los matches
-GET 
-localhost:3000/api/matches
+GET
+http://localhost:3000/api/matches
