@@ -1,17 +1,20 @@
+// index.js
+// Importa React, la biblioteca principal para construir interfaces de usuario
 import React from 'react';
+// Importa ReactDOM para renderizar la aplicación en el DOM
 import ReactDOM from 'react-dom/client';
-import './index.css';
+// Importa el archivo de estilos globales
+import './styles/index.css';
+// Importa el componente principal de la aplicación
 import App from './App';
-import reportWebVitals from './reportWebVitals';
 
+// Crea el punto de entrada de la aplicación React y lo monta en el elemento con id="root" del HTML
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+// Renderiza el componente App dentro del modo estricto de React (React.StrictMode)
+// Esto ayuda a detectar errores potenciales y prácticas obsoletas en desarrollo
 root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
