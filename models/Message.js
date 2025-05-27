@@ -1,35 +1,31 @@
 // models/Message.js
-// Importa Mongoose para la definición del esquema
 const mongoose = require('mongoose');
-// Importa la función para generar identificadores UUID
 const { v4: uuidv4 } = require('uuid');
 
-// Define el esquema del modelo Message para almacenar mensajes entre usuarios
 const messageSchema = new mongoose.Schema({
   id: {
     type: String,
-    default: uuidv4,   // Se genera automáticamente un UUID para cada mensaje
-    primaryKey: true   // Se marca como clave primaria (aunque Mongoose usa _id por defecto)
+    default: uuidv4,  
+    primaryKey: true   
   },
   senderId: {
     type: String,
-    ref: 'User',       // Referencia al usuario que envía el mensaje
-    required: true     // Campo obligatorio
+    ref: 'User',     
+    required: true  
   },
   receiverId: {
     type: String,
-    ref: 'User',       // Referencia al usuario que recibe el mensaje
+    ref: 'User',    
     required: true
   },
   content: {
     type: String,
-    required: true     // El contenido del mensaje es obligatorio
+    required: true   
   },
   timestamp: {
     type: Date,
-    default: Date.now  // Se asigna la fecha y hora actual automáticamente
+    default: Date.now 
   }
 });
 
-// Exporta el modelo "Message" basado en el esquema definido
 module.exports = mongoose.model('Message', messageSchema);

@@ -1,44 +1,34 @@
 // // index.js
-// Importa React y hooks para manejar estado y efectos
 import React, { useState, useEffect, useRef } from 'react';
-// Importa la librería de Socket.io cliente
 import io from 'socket.io-client';
-// Importa los estilos CSS del componente
 import '../styles/Chat.css';
 
-// Componente funcional Chat
 const Chat = () => {
-  // Estados para manejar los datos del mensaje
-  const [senderId, setSenderId] = useState('');       // ID del remitente
-  const [receiverId, setReceiverId] = useState('');   // ID del receptor
-  const [message, setMessage] = useState('');         // Contenido del mensaje
-  const [messages, setMessages] = useState([]);       // Historial de mensajes
-  const socketRef = useRef();                         // Referencia al socket
-  const [error, setError] = useState('');             // Mensajes de error
+  const [senderId, setSenderId] = useState('');    
+  const [receiverId, setReceiverId] = useState('');
+  const [message, setMessage] = useState('');      
+  const [messages, setMessages] = useState([]);    
+  const socketRef = useRef();                       
+  const [error, setError] = useState('');         
 
-  // Efecto que se ejecuta al montar el componente
+  
   useEffect(() => {
-    // Conexión al servidor backend vía WebSocket
     socketRef.current = io('http://localhost:3000');
 
-    // Escucha de mensajes entrantes
     socketRef.current.on('receive_message', (data) => {
       setMessages((prevMessages) => [...prevMessages, data]);
     });
 
-    // Manejo de errores enviados desde el servidor
     socketRef.current.on('message_error', (data) => {
       setError(data.message);
-      setTimeout(() => setError(''), 3000); // Borra el error después de 3 segundos
+      setTimeout(() => setError(''), 3000); 
     });
 
-    // Limpieza al desmontar el componente
     return () => {
       socketRef.current.disconnect();
     };
   }, []);
 
-  // Función que envía el mensaje por el socket
   const sendMessage = () => {
     if (message && senderId && receiverId) {
       socketRef.current.emit('sendMessage', {
@@ -46,15 +36,14 @@ const Chat = () => {
         receiverId: receiverId,
         content: message,
       });
-      setMessage(''); // Limpia el campo de mensaje después de enviarlo
+      setMessage('');
     }
   };
 
-  // Estructura visual del componente
   return (
     <div className="chat-container">
       
-      {/* Sección para ingresar el ID del remitente */}
+      {}
       <div className="input-section">
         <label>Sender ID:</label>
         <input
@@ -64,7 +53,7 @@ const Chat = () => {
         />
       </div>
 
-      {/* Sección para ingresar el ID del receptor */}
+      {}
       <div className="input-section">
         <label>Receiver ID:</label>
         <input
@@ -74,7 +63,7 @@ const Chat = () => {
         />
       </div>
 
-      {/* Campo de entrada del mensaje y botón para enviar */}
+      {}
       <div className="input-section">
         <label>Message:</label>
         <input
@@ -85,10 +74,10 @@ const Chat = () => {
         <button onClick={sendMessage}>Send</button>
       </div>
 
-      {/* Muestra mensajes de error, si existen */}
+      {}
       {error && <div className="error-message">{error}</div>}
 
-      {/* Muestra el historial de mensajes */}
+      {}
       <div className="message-container">
         <h3>Chat:</h3>
         {messages.map((msg, index) => {
@@ -108,5 +97,4 @@ const Chat = () => {
   );
 };
 
-// Exporta el componente para ser utilizado en App.js
 export default Chat;
