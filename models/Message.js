@@ -3,29 +3,29 @@ const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
 const messageSchema = new mongoose.Schema({
-  id: {
+  uuid: {
     type: String,
-    default: uuidv4,  
-    primaryKey: true   
+    default: uuidv4,
+    unique: true,
   },
-  senderId: {
+  senderUuid: {
     type: String,
-    ref: 'User',     
-    required: true  
+    required: true,
+    ref: 'User',
   },
-  receiverId: {
+  receiverUuid: {
     type: String,
-    ref: 'User',    
-    required: true
+    required: true,
+    ref: 'User',
   },
   content: {
     type: String,
-    required: true   
+    required: true,
   },
   timestamp: {
     type: Date,
-    default: Date.now 
-  }
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model('Message', messageSchema);

@@ -1,20 +1,35 @@
 // controllers/messages.js
 const Message = require('../models/Message');
-const getMessages = async (req, res) => {
-    try {
-        const { user1Id, user2Id } = req.params;
 
-        const messages = await Message.find({
-            $or: [
-                { senderId: user1Id, receiverId: user2Id },
-                { senderId: user2Id, receiverId: user1Id }
-            ]
-        }).sort({ timestamp: 1 });
-
-        res.json(messages);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+const createMessage = async (req, res) => {
+  try {
+    const { senderUuid, receiverUuid, content } = req.body;
+    const message = new Message({ senderUuid, receiverUuid, content });
+    await message.save();
+    res.status(201).json(message);
+  } catch (error) {
+    console.error('Error al crear mensaje:', error);
+    res.status(500).json({ error: 'Error al crear el mensaje' });
+  }
 };
 
-module.exports = { getMessages };
+const getMessagesBetweenUsers = async (req, res) => {
+  try {
+    const { senderUuid, receiverUuid } = req.params;
+    const messages = await Message.find({
+      $or: [
+        { senderUuid, receiverUuid },
+        { senderUuid: receiverUuid, receiverUuid: senderUuid }
+      ]
+    }).sort({ timestamp: 1 });
+    res.json(messages);
+  } catch (error) {
+    console.error('Error al obtener mensajes:', error);
+    res.status(500).json({ error: 'Error al obtener los mensajes' });
+  }
+};
+
+module.exports = {
+  createMessage,
+  getMessagesBetweenUsers
+};

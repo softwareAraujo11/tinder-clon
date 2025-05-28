@@ -1,90 +1,98 @@
 // controllers/users.js
 const User = require('../models/User');
-const { v4: uuidv4 } = require('uuid');
+
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener usuarios' });
+  }
+};
 
 const registerOrUpdateUser = async (req, res) => {
-  const { name, email, password, age, gender, location, interests, profilePicture } = req.body;
-
-  console.log('📥 Datos recibidos del frontend:', req.body);
+  const { email, name, profilePicture, password, age, gender, location, interests } = req.body;
 
   try {
     let user = await User.findOne({ email });
 
     if (user) {
-      user.name = name;
+      user.name = name || user.name;
+      user.profilePicture = profilePicture || user.profilePicture;
+      user.password = password || user.password;
       user.age = age;
       user.gender = gender;
       user.location = location;
       user.interests = interests;
-      user.profilePicture = profilePicture;
-
-      const updatedUser = await user.save();
-      return res.status(200).json(updatedUser);
-    } else {
-      const newUser = new User({
-        id: uuidv4(),
-        name,
-        email,
-        password,
-        age,
-        gender,
-        location,
-        interests,
-        profilePicture
-      });
-
-      const savedUser = await newUser.save();
-      return res.status(201).json(savedUser);
+      await user.save();
+      return res.json({ message: 'Usuario actualizado', user });
     }
+
+    const newUser = new User({
+      email,
+      name,
+      profilePicture,
+      password: password || 'fromGoogleAuth',
+      age,
+      gender,
+      location,
+      interests
+    });
+
+    await newUser.save();
+    res.json({ message: 'Usuario registrado', user: newUser });
   } catch (error) {
-    console.error('❌ Error al guardar usuario:', error.message);
-    return res.status(400).json({ message: error.message });
+    console.error('Error al registrar o actualizar usuario:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
 
-const getUsers = async (req, res) => {
+const getUserByUuid = async (req, res) => {
+  const { uuid } = req.params;
   try {
-    const { location, interests } = req.query;
-    let filter = {};
-
-    if (location) {
-      filter.location = { $regex: location, $options: 'i' };
-    }
-
-    if (interests) {
-      const interestArray = interests.split(',').map(i => i.trim());
-      filter.interests = { $in: interestArray };
-    }
-
-    const users = await User.find(filter);
-    res.json(users);
+    const user = await User.findOne({ uuid });
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+    res.json(user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
 
 const updateUser = async (req, res) => {
-  const { id } = req.params;
-  const updates = req.body;
-
+  const { uuid } = req.params;
   try {
-    const updatedUser = await User.findByIdAndUpdate(id, updates, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
+    const updatedUser = await User.findOneAndUpdate({ uuid }, req.body, { new: true });
     res.json(updatedUser);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};
+
+const getSuggestedUsers = async (req, res) => {
+  const { uuid } = req.params;
+
+  try {
+    const currentUser = await User.findOne({ uuid });
+    if (!currentUser) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    const suggested = await User.find({
+      uuid: { $ne: currentUser.uuid },
+      location: currentUser.location,
+      interests: { $in: currentUser.interests }
+    });
+
+    res.json(suggested);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener sugerencias' });
   }
 };
 
 module.exports = {
-  registerOrUpdateUser,
   getUsers,
+  registerOrUpdateUser,
+  getUserByUuid,
   updateUser,
+  getSuggestedUsers
 };

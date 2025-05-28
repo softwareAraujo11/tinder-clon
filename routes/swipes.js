@@ -1,9 +1,8 @@
 // routes/swipes.js
 const express = require('express');
-const { swipeUser } = require('../controllers/swipes');
-
 const router = express.Router();
+const { registerSwipe } = require('../controllers/swipes');
 
-router.post('/', swipeUser);
+router.post('/', registerSwipe);
 
 module.exports = router;

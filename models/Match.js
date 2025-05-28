@@ -2,26 +2,25 @@
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
-
 const matchSchema = new mongoose.Schema({
-  id: {
+  uuid: {
     type: String,
-    default: uuidv4,  
-    primaryKey: true  
+    default: uuidv4,
+    unique: true
   },
-  user1Id: {
+  user1Uuid: {
     type: String,
-    ref: 'User',      
-    required: true    
-  },
-  user2Id: {
-    type: String,
-    ref: 'User',      
+    ref: 'User',
     required: true
   },
-  timestamp: {
+  user2Uuid: {
+    type: String,
+    ref: 'User',
+    required: true
+  },
+  createdAt: {
     type: Date,
-    default: Date.now 
+    default: Date.now
   }
 });
 

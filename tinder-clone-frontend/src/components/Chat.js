@@ -1,98 +1,108 @@
-// // index.js
-import React, { useState, useEffect, useRef } from 'react';
+// components/Chat.js
+import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import '../styles/Chat.css';
+import { auth } from '../services/firebase';
+import { useParams } from 'react-router-dom';
+
+const socket = io('http://localhost:3000');
 
 const Chat = () => {
-  const [senderId, setSenderId] = useState('');    
-  const [receiverId, setReceiverId] = useState('');
-  const [message, setMessage] = useState('');      
-  const [messages, setMessages] = useState([]);    
-  const socketRef = useRef();                       
-  const [error, setError] = useState('');         
+  const { userUuid: receiverUuid } = useParams();
+  const [senderUuid, setSenderUuid] = useState(null);
+  const [senderName, setSenderName] = useState('');
+  const [receiverName, setReceiverName] = useState('');
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const messagesEndRef = useRef(null);
 
-  
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   useEffect(() => {
-    socketRef.current = io('http://localhost:3000');
+    const fetchUsers = async () => {
+      const currentUser = auth.currentUser;
+      const res = await fetch('http://localhost:3000/api/users');
+      const users = await res.json();
 
-    socketRef.current.on('receive_message', (data) => {
-      setMessages((prevMessages) => [...prevMessages, data]);
-    });
+      const mongoSender = users.find((u) => u.email === currentUser.email);
+      const mongoReceiver = users.find((u) => u.uuid === receiverUuid);
 
-    socketRef.current.on('message_error', (data) => {
-      setError(data.message);
-      setTimeout(() => setError(''), 3000); 
-    });
+      if (mongoSender) {
+        setSenderUuid(mongoSender.uuid);
+        setSenderName(mongoSender.name || 'Tú');
+      }
 
-    return () => {
-      socketRef.current.disconnect();
+      if (mongoReceiver) {
+        setReceiverName(mongoReceiver.name || 'Ell@');
+      }
     };
+
+    fetchUsers();
+  }, [receiverUuid]);
+
+  useEffect(() => {
+    if (senderUuid && receiverUuid) {
+      socket.emit('join_room', { userUuid1: senderUuid, userUuid2: receiverUuid });
+    }
+  }, [senderUuid, receiverUuid]);
+
+  useEffect(() => {
+    socket.on('receive_message', (msg) => {
+      setMessages((prev) => [...prev, msg]);
+      scrollToBottom();
+    });
+
+    return () => socket.off('receive_message');
   }, []);
 
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (senderUuid && receiverUuid) {
+        const res = await fetch(`http://localhost:3000/api/messages/${senderUuid}/${receiverUuid}`);
+        const data = await res.json();
+        setMessages(data);
+        scrollToBottom();
+      }
+    };
+
+    fetchMessages();
+  }, [senderUuid, receiverUuid]);
+
   const sendMessage = () => {
-    if (message && senderId && receiverId) {
-      socketRef.current.emit('sendMessage', {
-        senderId: senderId,
-        receiverId: receiverId,
-        content: message,
-      });
-      setMessage('');
-    }
+    if (!message.trim()) return;
+
+    const msgData = {
+      senderUuid,
+      receiverUuid,
+      content: message.trim(),
+    };
+
+    socket.emit('sendMessage', msgData);
+    setMessages((prev) => [...prev, { ...msgData, _id: Date.now() }]);
+    setMessage('');
+    scrollToBottom();
   };
 
   return (
-    <div className="chat-container">
-      
-      {}
-      <div className="input-section">
-        <label>Sender ID:</label>
-        <input
-          type="text"
-          value={senderId}
-          onChange={(e) => setSenderId(e.target.value)}
-        />
+    <div>
+      <h2>Chat con {receiverName}</h2>
+      <div style={{ minHeight: '300px', border: '1px solid #ccc', padding: '10px', marginBottom: '10px', overflowY: 'auto' }}>
+        {messages.map((msg, idx) => (
+          <div key={msg._id || idx} style={{ textAlign: msg.senderUuid === senderUuid ? 'right' : 'left' }}>
+            <strong>{msg.senderUuid === senderUuid ? senderName : receiverName}:</strong> {msg.content}
+          </div>
+        ))}
+        <div ref={messagesEndRef} />
       </div>
-
-      {}
-      <div className="input-section">
-        <label>Receiver ID:</label>
-        <input
-          type="text"
-          value={receiverId}
-          onChange={(e) => setReceiverId(e.target.value)}
-        />
-      </div>
-
-      {}
-      <div className="input-section">
-        <label>Message:</label>
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        <button onClick={sendMessage}>Send</button>
-      </div>
-
-      {}
-      {error && <div className="error-message">{error}</div>}
-
-      {}
-      <div className="message-container">
-        <h3>Chat:</h3>
-        {messages.map((msg, index) => {
-          const sender = msg.senderName ? msg.senderName : msg.senderId;
-          return (
-            <div key={index} className="message">
-              <strong className="sender-name">{sender}:</strong>
-              <span className="message-content">{msg.content}</span>
-              <span className="timestamp">
-                {new Date(msg.timestamp).toLocaleTimeString()}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder="Escribe un mensaje..."
+        onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+      />
+      <button onClick={sendMessage}>Enviar</button>
     </div>
   );
 };

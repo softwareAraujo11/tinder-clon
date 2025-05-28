@@ -1,22 +1,22 @@
 // models/Swipe.js
+// models/Swipe.js
 const mongoose = require('mongoose');
-
 const { v4: uuidv4 } = require('uuid');
 
 const swipeSchema = new mongoose.Schema({
-  id: {
+  uuid: {
     type: String,
-    default: uuidv4,   
-    primaryKey: true   
+    default: uuidv4,
+    unique: true
   },
-  originUserId: {
+  originUserUuid: {
     type: String,
-    ref: 'User',      
-    required: true   
+    ref: 'User',
+    required: true
   },
-  targetUserId: {
+  targetUserUuid: {
     type: String,
-    ref: 'User',       
+    ref: 'User',
     required: true
   },
   action: {

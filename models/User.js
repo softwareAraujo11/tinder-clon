@@ -1,42 +1,19 @@
-// models/User.js
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
 const userSchema = new mongoose.Schema({
-  id: {
+  uuid: {
     type: String,
-    default: uuidv4,
-    primaryKey: true
+    default: uuidv4
   },
-  name: {
-    type: String,
-    required: true
-  },
-  age: {
-    type: Number
-  },
-  gender: {
-    type: String
-  },
-  location: {
-    type: String
-  },
-  interests: {
-    type: [String],
-    default: []
-  },
-  profilePicture: {
-    type: String
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  password: {
-    type: String,
-    required: true
-  }
+  name: { type: String, required: true },
+  age: Number,
+  gender: String,
+  location: String,
+  interests: { type: [String], default: [] },
+  profilePicture: String,
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true } // ✅ obligatorio
 });
 
 module.exports = mongoose.model('User', userSchema);
