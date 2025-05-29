@@ -4,63 +4,49 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from '../services/firebase';
 
 const ChatSelector = () => {
-  const [matches, setMatches] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchMatches = async () => {
-      const currentUser = auth.currentUser;
-      if (!currentUser) return;
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+      if (!firebaseUser) return;
 
       try {
-        // Obtener todos los usuarios para encontrar el actual
-        const resUsers = await fetch('http://localhost:3000/api/users');
-        const users = await resUsers.json();
-        const mongoUser = users.find((u) => u.email === currentUser.email);
+        const resUser = await fetch(`http://localhost:3000/api/users/email/${firebaseUser.email}`);
+        const mongoUser = await resUser.json();
 
-        if (!mongoUser) return;
+        if (!mongoUser || !mongoUser.uuid) return;
 
-        // Obtener matches del usuario usando UUID
-        const res = await fetch(`http://localhost:3000/api/matches?userUuid=${mongoUser.uuid}`);
-        const matchesData = await res.json();
+        const resMessages = await fetch(`http://localhost:3000/api/messages/conversations/${mongoUser.uuid}`);
+        const conversations = await resMessages.json();
 
-        // Filtrar los datos del otro usuario en el match
-        const formattedMatches = matchesData.map((match) => {
-          const otherUuid =
-            match.user1Uuid === mongoUser.uuid ? match.user2Uuid : match.user1Uuid;
-          const otherUser = users.find((u) => u.uuid === otherUuid);
+        const formatted = conversations.map((contact) => ({
+          uuid: contact.uuid,
+          name: contact.name,
+          location: contact.location,
+          profilePicture: contact.profilePicture || '',
+        }));
 
-          return {
-            matchId: match._id,
-            uuid: otherUser?.uuid,
-            name: otherUser?.name || 'Usuario',
-            location: otherUser?.location || 'Desconocida',
-            profilePicture: otherUser?.profilePicture || '',
-          };
-        });
+        setContacts(formatted);
+      } catch (error) {}
+    });
 
-        setMatches(formattedMatches);
-      } catch (error) {
-        console.error('Error al obtener matches:', error);
-      }
-    };
-
-    fetchMatches();
+    return () => unsubscribe();
   }, []);
 
   return (
     <div>
-      <h2>Selecciona un match para chatear</h2>
-      {matches.length === 0 ? (
-        <p>No tienes matches todavía.</p>
+      <h2>Chats iniciados</h2>
+      {contacts.length === 0 ? (
+        <p>No has iniciado conversaciones.</p>
       ) : (
         <ul>
-          {matches.map((match) => (
-            <li key={match.matchId}>
-              <img src={match.profilePicture} alt={match.name} width={50} />
-              <strong>{match.name}</strong> - {match.location}
+          {contacts.map((contact) => (
+            <li key={contact.uuid}>
+              <img src={contact.profilePicture} alt={contact.name} />
+              <strong>{contact.name}</strong> - {contact.location}
               <br />
-              <button onClick={() => navigate(`/chat/${match.uuid}`)}>Chatear</button>
+              <button onClick={() => navigate(`/chat/${contact.uuid}`)}>Continuar Chat</button>
             </li>
           ))}
         </ul>

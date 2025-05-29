@@ -1,108 +1,92 @@
 // components/Chat.js
 import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import { auth } from '../services/firebase';
 import { useParams } from 'react-router-dom';
+import { auth } from '../services/firebase';
 
 const socket = io('http://localhost:3000');
 
 const Chat = () => {
-  const { userUuid: receiverUuid } = useParams();
-  const [senderUuid, setSenderUuid] = useState(null);
-  const [senderName, setSenderName] = useState('');
-  const [receiverName, setReceiverName] = useState('');
-  const [message, setMessage] = useState('');
+  const { userUuid } = useParams();
+  const [currentUser, setCurrentUser] = useState(null);
+  const [receiver, setReceiver] = useState(null);
   const [messages, setMessages] = useState([]);
-  const messagesEndRef = useRef(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const [newMessage, setNewMessage] = useState('');
+  const bottomRef = useRef(null);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const currentUser = auth.currentUser;
-      const res = await fetch('http://localhost:3000/api/users');
-      const users = await res.json();
+    const fetchData = async () => {
+      const firebaseUser = auth.currentUser;
+      if (!firebaseUser) return;
 
-      const mongoSender = users.find((u) => u.email === currentUser.email);
-      const mongoReceiver = users.find((u) => u.uuid === receiverUuid);
+      const resUsers = await fetch('http://localhost:3000/api/users');
+      const users = await resUsers.json();
+      const current = users.find((u) => u.email === firebaseUser.email);
+      const other = users.find((u) => u.uuid === userUuid);
 
-      if (mongoSender) {
-        setSenderUuid(mongoSender.uuid);
-        setSenderName(mongoSender.name || 'Tú');
-      }
+      if (!current || !other) return;
 
-      if (mongoReceiver) {
-        setReceiverName(mongoReceiver.name || 'Ell@');
-      }
+      setCurrentUser(current);
+      setReceiver(other);
+
+      const res = await fetch(`http://localhost:3000/api/messages/${current.uuid}/${other.uuid}`);
+      const data = await res.json();
+
+      setMessages(data);
+
+      const roomId = [current.uuid, other.uuid].sort().join('_');
+      socket.emit('join_room', { userUuid1: current.uuid, userUuid2: other.uuid });
     };
 
-    fetchUsers();
-  }, [receiverUuid]);
+    fetchData();
+  }, [userUuid]);
 
   useEffect(() => {
-    if (senderUuid && receiverUuid) {
-      socket.emit('join_room', { userUuid1: senderUuid, userUuid2: receiverUuid });
-    }
-  }, [senderUuid, receiverUuid]);
-
-  useEffect(() => {
-    socket.on('receive_message', (msg) => {
-      setMessages((prev) => [...prev, msg]);
-      scrollToBottom();
+    socket.on('receive_message', (message) => {
+      setMessages((prev) => [...prev, message]);
     });
 
-    return () => socket.off('receive_message');
+    return () => {
+      socket.off('receive_message');
+    };
   }, []);
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      if (senderUuid && receiverUuid) {
-        const res = await fetch(`http://localhost:3000/api/messages/${senderUuid}/${receiverUuid}`);
-        const data = await res.json();
-        setMessages(data);
-        scrollToBottom();
-      }
-    };
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
-    fetchMessages();
-  }, [senderUuid, receiverUuid]);
+  const handleSend = () => {
+    if (!newMessage.trim() || !currentUser || !receiver) return;
 
-  const sendMessage = () => {
-    if (!message.trim()) return;
+    socket.emit('sendMessage', {
+      senderUuid: currentUser.uuid,
+      receiverUuid: receiver.uuid,
+      content: newMessage.trim(),
+    });
 
-    const msgData = {
-      senderUuid,
-      receiverUuid,
-      content: message.trim(),
-    };
-
-    socket.emit('sendMessage', msgData);
-    setMessages((prev) => [...prev, { ...msgData, _id: Date.now() }]);
-    setMessage('');
-    scrollToBottom();
+    setNewMessage('');
   };
+
+  if (!currentUser || !receiver) return <p>Cargando chat...</p>;
 
   return (
     <div>
-      <h2>Chat con {receiverName}</h2>
-      <div style={{ minHeight: '300px', border: '1px solid #ccc', padding: '10px', marginBottom: '10px', overflowY: 'auto' }}>
-        {messages.map((msg, idx) => (
-          <div key={msg._id || idx} style={{ textAlign: msg.senderUuid === senderUuid ? 'right' : 'left' }}>
-            <strong>{msg.senderUuid === senderUuid ? senderName : receiverName}:</strong> {msg.content}
+      <h2>Chat con {receiver.name}</h2>
+      <div>
+        {messages.map((msg, i) => (
+          <div key={msg._id || i}>
+            <strong>{msg.senderUuid === currentUser.uuid ? 'Tú' : receiver.name}:</strong> {msg.content}
           </div>
         ))}
-        <div ref={messagesEndRef} />
+        <div ref={bottomRef} />
       </div>
       <input
         type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Escribe un mensaje..."
-        onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+        value={newMessage}
+        onChange={(e) => setNewMessage(e.target.value)}
+        placeholder="Escribe tu mensaje..."
       />
-      <button onClick={sendMessage}>Enviar</button>
+      <button onClick={handleSend}>Enviar</button>
     </div>
   );
 };

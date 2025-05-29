@@ -18,9 +18,7 @@ const Navbar = () => {
           const users = await res.json();
           const foundUser = users.find(u => u.email === currentUser.email);
           if (foundUser) setUserUuid(foundUser.uuid);
-        } catch (error) {
-          console.error('Error al obtener el uuid del usuario:', error);
-        }
+        } catch (error) {}
       }
     });
 
@@ -33,53 +31,22 @@ const Navbar = () => {
   };
 
   return (
-    <nav style={styles.navbar}>
+    <nav>
       {user ? (
         <>
-          <Link to="/app" style={styles.link}>Sugerencias</Link>
-          <Link to="/matches" style={styles.link}>Matches</Link>
+          <Link to="/app">Sugerencias</Link>
+          <Link to="/matches">Matches</Link>
           {userUuid && (
-            <Link to={`/chat?userId=${userUuid}`} style={styles.link}>Chat</Link>
+            <Link to={`/chat?userId=${userUuid}`}>Chat</Link>
           )}
-          <span style={styles.user}>👤 {user.displayName || user.email}</span>
-          <button onClick={handleLogout} style={styles.button}>Cerrar sesión</button>
+          <span>{user.displayName || user.email}</span>
+          <button onClick={handleLogout}>Cerrar sesión</button>
         </>
       ) : (
-        <Link to="/login" style={styles.link}>Iniciar sesión</Link>
+        <Link to="/login">Iniciar sesión</Link>
       )}
     </nav>
   );
-};
-
-const styles = {
-  navbar: {
-    backgroundColor: '#333',
-    padding: '10px',
-    display: 'flex',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  link: {
-    color: '#fff',
-    textDecoration: 'none',
-    fontSize: '18px',
-    marginRight: '10px',
-  },
-  user: {
-    color: '#ccc',
-    marginLeft: '10px',
-    fontSize: '14px',
-  },
-  button: {
-    backgroundColor: '#555',
-    color: '#fff',
-    border: 'none',
-    padding: '5px 10px',
-    cursor: 'pointer',
-    borderRadius: '4px',
-    marginLeft: '10px',
-  },
 };
 
 export default Navbar;

@@ -63,7 +63,6 @@ const CompleteProfile = () => {
 
       navigate('/app');
     } catch (err) {
-      console.error(err);
       setError('No se pudo completar el perfil.');
     }
   };
@@ -71,7 +70,7 @@ const CompleteProfile = () => {
   return (
     <div className="profile-container">
       <h2>Completa tu perfil</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p>{error}</p>}
       <form onSubmit={handleSubmit}>
         <label>Nombre:</label>
         <input value={name} onChange={(e) => setName(e.target.value)} required />

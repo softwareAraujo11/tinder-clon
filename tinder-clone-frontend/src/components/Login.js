@@ -48,7 +48,7 @@ const Login = () => {
         />
         <button type="submit">Login</button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p>{error}</p>}
     </div>
   );
 };

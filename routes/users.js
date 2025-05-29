@@ -6,13 +6,13 @@ const {
   getUsers,
   getSuggestedUsers,
   updateUser,
-  getUserByUuid
+  getUserByEmail
 } = require('../controllers/users');
 
-router.post('/', registerOrUpdateUser);
+router.post('/register', registerOrUpdateUser);
 router.get('/', getUsers);
-router.get('/suggested/:uuid', getSuggestedUsers); // ✅ esta debe estar antes
-router.get('/:uuid', getUserByUuid);
+router.get('/suggested/:uuid', getSuggestedUsers);
 router.put('/:uuid', updateUser);
+router.get('/email/:email', getUserByEmail);
 
 module.exports = router;

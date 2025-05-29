@@ -20,7 +20,6 @@ const UserFilter = () => {
       const data = await res.json();
       setFilteredUsers(data);
     } catch (err) {
-      console.error('Error fetching filtered users:', err);
     } finally {
       setLoading(false);
     }

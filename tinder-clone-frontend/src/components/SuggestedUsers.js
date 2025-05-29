@@ -41,12 +41,9 @@ const SuggestedUsers = () => {
       });
 
       const data = await res.json();
-      console.log('Like registrado:', data);
 
       setSuggestedUsers((prev) => prev.filter((user) => user.uuid !== targetUuid));
-    } catch (error) {
-      console.error('Error al registrar el like:', error);
-    }
+    } catch (error) {}
   };
 
   return (
@@ -58,7 +55,7 @@ const SuggestedUsers = () => {
         <ul>
           {suggestedUsers.map((user) => (
             <li key={user.uuid}>
-              <img src={user.profilePicture} alt={user.name} width={50} />
+              <img src={user.profilePicture} alt={user.name} />
               <strong>{user.name}</strong> - {user.location}
               <br />
               <button onClick={() => handleLike(user.uuid)}>❤️ Me gusta</button>

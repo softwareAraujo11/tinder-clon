@@ -1,12 +1,9 @@
 // routes/messages.js
 const express = require('express');
 const router = express.Router();
-const {
-  createMessage,
-  getMessagesBetweenUsers
-} = require('../controllers/messages'); // Asegúrate que la ruta sea correcta
+const { getMessages, getUserConversations } = require('../controllers/messages');
 
-router.post('/', createMessage); // ✅ esta línea estaba fallando por "undefined"
-router.get('/:senderUuid/:receiverUuid', getMessagesBetweenUsers);
+router.get('/conversations/:userUuid', getUserConversations);
+router.get('/:userUuid1/:userUuid2', getMessages);
 
 module.exports = router;

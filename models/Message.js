@@ -6,26 +6,26 @@ const messageSchema = new mongoose.Schema({
   uuid: {
     type: String,
     default: uuidv4,
-    unique: true,
+    unique: true
   },
   senderUuid: {
     type: String,
     required: true,
-    ref: 'User',
+    ref: 'User'
   },
   receiverUuid: {
     type: String,
     required: true,
-    ref: 'User',
+    ref: 'User'
   },
   content: {
     type: String,
-    required: true,
+    required: true
   },
   timestamp: {
     type: Date,
-    default: Date.now,
-  },
+    default: Date.now
+  }
 });
 
 module.exports = mongoose.model('Message', messageSchema);

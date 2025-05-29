@@ -44,7 +44,6 @@ const AppRoutes = () => {
             }
           }
         } catch (error) {
-          console.error('Error verificando perfil:', error);
           navigate('/login');
         }
       }
@@ -56,7 +55,7 @@ const AppRoutes = () => {
   return (
     <>
       <Navbar />
-      <div style={{ padding: '20px' }}>
+      <div>
         <Routes>
           <Route path="/login" element={<AuthMenu />} />
           <Route path="/complete-profile" element={<CompleteProfile />} />

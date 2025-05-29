@@ -38,7 +38,6 @@ const registerSwipe = async (req, res) => {
 
     res.status(201).json({ message: 'Swipe registrado' });
   } catch (error) {
-    console.error('Error al registrar swipe:', error);
     res.status(500).json({ error: 'Error en el servidor' });
   }
 };

@@ -25,7 +25,6 @@ const AuthMenu = () => {
         navigate('/complete-profile', { state: { user: res.user } });
       }
     } catch (error) {
-      console.error('Google login error:', error);
       alert('Google login failed: ' + error.message);
     }
   };

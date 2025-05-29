@@ -2,7 +2,6 @@
 const Match = require('../models/Match');
 const User = require('../models/User');
 
-// Obtener todos los matches de un usuario por UUID
 const getMatches = async (req, res) => {
   try {
     const { userUuid } = req.query;
@@ -20,12 +19,10 @@ const getMatches = async (req, res) => {
 
     res.json(matchedUsers);
   } catch (error) {
-    console.error('Error al obtener matches:', error);
     res.status(500).json({ error: 'Error al obtener matches' });
   }
 };
 
-// Verificar si hay un match entre dos usuarios
 const getMatchByUsers = async (req, res) => {
   const { userUuid1, userUuid2 } = req.params;
 

@@ -1,9 +1,11 @@
 // components/Matches.js
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { auth } from '../services/firebase';
 
 const Matches = () => {
   const [matches, setMatches] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMatches = async () => {
@@ -13,30 +15,23 @@ const Matches = () => {
       try {
         const resUsers = await fetch('http://localhost:3000/api/users');
         const users = await resUsers.json();
-        const mongoUser = users.find((u) => u.email === firebaseUser.email);
 
-        if (!mongoUser || !mongoUser.uuid) {
-          console.warn('Usuario no encontrado en MongoDB');
-          return;
-        }
+        const mongoUser = users.find((u) => u.email === firebaseUser.email);
+        if (!mongoUser || !mongoUser.uuid) return;
 
         const res = await fetch(`http://localhost:3000/api/matches?userUuid=${mongoUser.uuid}`);
-        const otherUsers = await res.json();
+        const matchedUsers = await res.json();
 
-        console.log('UUID actual:', mongoUser.uuid);
-        console.log('Usuarios encontrados en matches:', otherUsers);
-
-        const formatted = otherUsers.map((u) => ({
-          matchId: u._id,
-          uuid: u.uuid,
-          name: u.name,
-          location: u.location,
-          profilePicture: u.profilePicture || '',
+        const formatted = matchedUsers.map((user) => ({
+          matchId: user._id,
+          uuid: user.uuid,
+          name: user.name,
+          location: user.location,
+          profilePicture: user.profilePicture || '',
         }));
 
         setMatches(formatted);
       } catch (error) {
-        console.error('Error al obtener matches:', error);
       }
     };
 
@@ -52,12 +47,10 @@ const Matches = () => {
         <ul>
           {matches.map((match) => (
             <li key={match.matchId}>
-              <img
-                src={match.profilePicture || 'https://via.placeholder.com/50'}
-                alt={match.name}
-                width={50}
-              />
+              <img src={match.profilePicture} alt={match.name} width={50} />
               <strong>{match.name}</strong> - {match.location}
+              <br />
+              <button onClick={() => navigate(`/chat/${match.uuid}`)}>Chatear</button>
             </li>
           ))}
         </ul>

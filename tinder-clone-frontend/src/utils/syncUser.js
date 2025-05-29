@@ -3,7 +3,6 @@ export const syncUserWithBackend = async (firebaseUser) => {
   const { uid, email, displayName, photoURL } = firebaseUser;
 
   try {
-    // Verifica si el usuario ya existe en MongoDB (por email)
     const response = await fetch('http://localhost:3000/api/users');
     const users = await response.json();
 
@@ -12,11 +11,10 @@ export const syncUserWithBackend = async (firebaseUser) => {
       return { exists: true, user: exists };
     }
 
-    // Si no existe, crea uno nuevo con info básica (completa luego el perfil)
     const newUser = {
       name: displayName || 'New User',
       email: email,
-      password: uid, // Puedes usar el UID de Firebase como contraseña temporal
+      password: uid,
       profilePicture: photoURL || '',
       age: null,
       gender: '',
@@ -33,7 +31,6 @@ export const syncUserWithBackend = async (firebaseUser) => {
     const createdUser = await createRes.json();
     return { exists: false, user: createdUser };
   } catch (error) {
-    console.error('Error syncing user with backend:', error);
     return null;
   }
 };

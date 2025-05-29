@@ -1,3 +1,4 @@
+// models/User.js
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
@@ -13,7 +14,7 @@ const userSchema = new mongoose.Schema({
   interests: { type: [String], default: [] },
   profilePicture: String,
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true } // ✅ obligatorio
+  password: { type: String, required: true }
 });
 
 module.exports = mongoose.model('User', userSchema);
