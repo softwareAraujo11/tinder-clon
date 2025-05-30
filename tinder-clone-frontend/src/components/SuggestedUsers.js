@@ -60,7 +60,7 @@ const SuggestedUsers = () => {
 
   return (
     <div className="suggested-container">
-      <h2 className="suggested-title">Usuarios sugeridos</h2>
+      <h2 className="suggested-title">Usuarios Sugeridos</h2>
       {Array.isArray(suggestedUsers) && suggestedUsers.length > 0 ? (
         <div className="suggested-grid">
           {suggestedUsers.map((user) => (

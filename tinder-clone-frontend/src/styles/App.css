@@ -1,5 +1,5 @@
 .main-content.with-navbar {
-  padding-bottom: 80px; /* Ajusta según altura de tu navbar */
+  padding-bottom: 80px;
 }
 
 @media (min-width: 768px) {

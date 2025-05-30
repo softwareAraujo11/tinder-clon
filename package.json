@@ -18,10 +18,12 @@
   },
   "homepage": "https://github.com/softwareAraujo11/tinder-clon#readme",
   "dependencies": {
+    "@faker-js/faker": "^9.8.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
+    "firebase-admin": "^13.4.0",
     "mongodb": "^6.16.0",
     "mongoose": "^8.14.0",
     "socket.io": "^4.8.1",
