@@ -4,6 +4,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { syncUserWithBackend } from '../utils/syncUser';
 import { useNavigate } from 'react-router-dom';
+import '../styles/Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -30,26 +31,42 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h2>Iniciar sesión con Email</h2>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-          required
-        />
-        <button type="submit">Iniciar sesión</button>
-      </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div className="auth-container">
+      <div className="auth-card">
+        <button className="close-button" onClick={() => navigate('/login')}>
+          ×
+        </button>
+        <h2>Iniciar Sesión</h2>
+        <form onSubmit={handleLogin}>
+          <input
+            type="email"
+            placeholder="Email"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            required
+            className="auth-input"
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            required
+            className="auth-input"
+          />
+          <button type="submit" className="auth-button">Iniciar sesión</button>
+        </form>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <p style={{ marginTop: '1rem' }}>
+          ¿No tienes cuenta?{' '}
+          <span
+            style={{ color: '#ff5864', cursor: 'pointer' }}
+            onClick={() => navigate('/register')}
+          >
+            Regístrate
+          </span>
+        </p>
+      </div>
     </div>
   );
 };

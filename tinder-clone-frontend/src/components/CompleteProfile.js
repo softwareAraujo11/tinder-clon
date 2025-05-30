@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../services/firebase';
 import { useNavigate } from 'react-router-dom';
+import '../styles/CompleteProfile.css';
 
 const CompleteProfile = () => {
   const navigate = useNavigate();
@@ -17,8 +18,16 @@ const CompleteProfile = () => {
   const [uuid, setUuid] = useState('');
   const [error, setError] = useState('');
 
-  const interestOptions = ['fútbol', 'música', 'viajes', 'cine', 'lectura', 'tecnología'];
-  const locationOptions = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena'];
+  const interestOptions = [
+    'Fútbol', 'Música', 'Viajes', 'Cine', 'Lectura', 'Tecnología', 'Moda', 'Videojuegos', 'Baile'
+  ];
+
+  const locationOptions = [
+    'Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Bucaramanga', 'Manizales', 'Pereira',
+    'Ibagué', 'Santa Marta', 'Armenia', 'Cúcuta', 'Neiva', 'Tunja', 'Villavicencio', 'Popayán',
+    'Pasto', 'Montería', 'Sincelejo', 'Riohacha', 'Quibdó', 'Florencia', 'Mocoa', 'Yopal',
+    'San José del Guaviare', 'Inírida', 'Mitú', 'Leticia'
+  ];
 
   useEffect(() => {
     const currentUser = auth.currentUser;
@@ -60,9 +69,7 @@ const CompleteProfile = () => {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
-        throw new Error('Error al registrar el perfil');
-      }
+      if (!response.ok) throw new Error('Error al registrar el perfil');
 
       navigate('/app');
     } catch (err) {
@@ -72,43 +79,48 @@ const CompleteProfile = () => {
 
   return (
     <div className="profile-container">
-      <h2>Completa tu perfil</h2>
-      {error && <p>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <label>Nombre:</label>
-        <input value={name} onChange={(e) => setName(e.target.value)} required />
+      <div className="profile-card">
+        <form onSubmit={handleSubmit} className="profile-form">
+          <h2>Completa tu perfil</h2>
+          {error && <p className="error-message">{error}</p>}
 
-        <label>Edad:</label>
-        <input type="number" value={age} onChange={(e) => setAge(e.target.value)} required />
+          <label>Nombre:</label>
+          <input value={name} onChange={(e) => setName(e.target.value)} required />
 
-        <label>Género:</label>
-        <select value={gender} onChange={(e) => setGender(e.target.value)}>
-          <option value="male">Masculino</option>
-          <option value="female">Femenino</option>
-        </select>
+          <label>Edad:</label>
+          <input type="number" value={age} onChange={(e) => setAge(e.target.value)} required />
 
-        <label>Ubicación:</label>
-        <select value={location} onChange={(e) => setLocation(e.target.value)}>
-          {locationOptions.map((loc) => (
-            <option key={loc} value={loc}>{loc}</option>
-          ))}
-        </select>
+          <label>Género:</label>
+          <select value={gender} onChange={(e) => setGender(e.target.value)}>
+            <option value="male">Masculino</option>
+            <option value="female">Femenino</option>
+          </select>
 
-        <label>Intereses:</label>
-        {interestOptions.map((interest) => (
-          <div key={interest}>
-            <input
-              type="checkbox"
-              value={interest}
-              checked={interests.includes(interest)}
-              onChange={handleCheckboxChange}
-            />
-            {interest}
+          <label>Ubicación:</label>
+          <select value={location} onChange={(e) => setLocation(e.target.value)}>
+            {locationOptions.map((loc) => (
+              <option key={loc} value={loc}>{loc}</option>
+            ))}
+          </select>
+
+          <label>Intereses:</label>
+          <div className="interests-group">
+            {interestOptions.map((interest) => (
+              <label key={interest} className="checkbox-label">
+                <input
+                  type="checkbox"
+                  value={interest}
+                  checked={interests.includes(interest)}
+                  onChange={handleCheckboxChange}
+                />
+                {interest}
+              </label>
+            ))}
           </div>
-        ))}
 
-        <button type="submit">Guardar Perfil</button>
-      </form>
+          <button type="submit" className="auth-button">Guardar Perfil</button>
+        </form>
+      </div>
     </div>
   );
 };

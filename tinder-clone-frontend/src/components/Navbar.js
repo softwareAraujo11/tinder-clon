@@ -1,10 +1,12 @@
 // components/Navbar.js
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { auth } from '../services/firebase';
+import '../styles/Navbar.css';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [userUuid, setUserUuid] = useState(null);
 
@@ -16,7 +18,7 @@ const Navbar = () => {
         try {
           const res = await fetch('http://localhost:3000/api/users');
           const users = await res.json();
-          const foundUser = users.find(u => u.email === currentUser.email);
+          const foundUser = users.find((u) => u.email === currentUser.email);
           if (foundUser) setUserUuid(foundUser.uuid);
         } catch (error) {}
       }
@@ -30,20 +32,22 @@ const Navbar = () => {
     navigate('/login');
   };
 
+  if (['/login', '/login-email', '/register'].includes(location.pathname)) return null;
+
   return (
-    <nav>
+    <nav className="navbar">
       {user ? (
         <>
-          <Link to="/app">Sugerencias</Link>
-          <Link to="/matches">Matches</Link>
+          <Link className="nav-link" to="/app">Sugerencias</Link>
+          <Link className="nav-link" to="/matches">Matches</Link>
           {userUuid && (
-            <Link to={`/chat?userId=${userUuid}`}>Chat</Link>
+            <Link className="nav-link" to={`/chat?userId=${userUuid}`}>Chat</Link>
           )}
-          <span>{user.displayName || user.email}</span>
-          <button onClick={handleLogout}>Cerrar sesión</button>
+          <span className="nav-user">{user.displayName || user.email}</span>
+          <button className="nav-button" onClick={handleLogout}>Salir</button>
         </>
       ) : (
-        <Link to="/login">Iniciar sesión</Link>
+        <Link className="nav-link" to="/login">Iniciar sesión</Link>
       )}
     </nav>
   );

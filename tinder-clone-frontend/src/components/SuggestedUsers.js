@@ -1,6 +1,7 @@
 // components/SuggestedUsers.js
 import React, { useEffect, useState } from 'react';
 import { auth } from '../services/firebase';
+import '../styles/SuggestedUsers.css';
 
 const SuggestedUsers = () => {
   const [suggestedUsers, setSuggestedUsers] = useState([]);
@@ -41,7 +42,7 @@ const SuggestedUsers = () => {
     if (!currentUserUuid || !targetUuid) return;
 
     try {
-      const res = await fetch('http://localhost:3000/api/swipes', {
+      await fetch('http://localhost:3000/api/swipes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -51,8 +52,6 @@ const SuggestedUsers = () => {
         })
       });
 
-      const data = await res.json();
-
       setSuggestedUsers((prev) => prev.filter((user) => user.uuid !== targetUuid));
     } catch (error) {
       console.error('Error al enviar like:', error);
@@ -60,21 +59,32 @@ const SuggestedUsers = () => {
   };
 
   return (
-    <div>
-      <h2>Usuarios sugeridos</h2>
+    <div className="suggested-container">
+      <h2 className="suggested-title">Usuarios sugeridos</h2>
       {Array.isArray(suggestedUsers) && suggestedUsers.length > 0 ? (
-        <ul>
+        <div className="suggested-grid">
           {suggestedUsers.map((user) => (
-            <li key={user.uuid}>
-              <img src={user.profilePicture} alt={user.name} width={50} />
-              <strong>{user.name}</strong> - {user.location}
-              <br />
-              <button onClick={() => handleLike(user.uuid)}>❤️ Me gusta</button>
-            </li>
+            <div key={user.uuid} className="suggested-card">
+              <img src={user.profilePicture} alt={user.name} className="suggested-img" />
+              <h3>{user.name}</h3>
+              <p className="suggested-location">{user.location}</p>
+
+              {user.interests && user.interests.length > 0 && (
+                <div className="interests-container">
+                  {user.interests.map((interest, index) => (
+                    <span key={index} className="interest-chip">{interest}</span>
+                  ))}
+                </div>
+              )}
+
+              <button onClick={() => handleLike(user.uuid)} className="like-button">
+                ❤️ Me gusta
+              </button>
+            </div>
           ))}
-        </ul>
+        </div>
       ) : (
-        <p>No hay más sugerencias por ahora.</p>
+        <p className="no-suggestions">No hay más sugerencias por ahora.</p>
       )}
     </div>
   );

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../services/firebase';
+import '../styles/Matches.css';
 
 const Matches = () => {
   const [matches, setMatches] = useState([]);
@@ -32,6 +33,7 @@ const Matches = () => {
 
         setMatches(formatted);
       } catch (error) {
+        console.error('Error al obtener matches:', error);
       }
     };
 
@@ -39,21 +41,30 @@ const Matches = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Tus matches</h2>
+    <div className="matches-container">
+      <h2 className="matches-title">Tus matches</h2>
       {matches.length === 0 ? (
-        <p>Aún no tienes matches.</p>
+        <p className="no-matches">Aún no tienes matches.</p>
       ) : (
-        <ul>
+        <div className="matches-grid">
           {matches.map((match) => (
-            <li key={match.matchId}>
-              <img src={match.profilePicture} alt={match.name} width={50} />
-              <strong>{match.name}</strong> - {match.location}
-              <br />
-              <button onClick={() => navigate(`/chat/${match.uuid}`)}>Chatear</button>
-            </li>
+            <div key={match.matchId} className="match-card">
+              <img
+                src={match.profilePicture}
+                alt={match.name}
+                className="match-img"
+                onError={(e) => { e.target.src = '/default-avatar.png'; }}
+              />
+              <div className="match-info">
+                <h4 className="match-name">{match.name}</h4>
+                <p className="match-location">{match.location}</p>
+              </div>
+              <button onClick={() => navigate(`/chat/${match.uuid}`)} className="chat-button">
+                Chatear
+              </button>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
