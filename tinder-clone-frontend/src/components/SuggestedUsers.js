@@ -65,7 +65,13 @@ const SuggestedUsers = () => {
         <div className="suggested-grid">
           {suggestedUsers.map((user) => (
             <div key={user.uuid} className="suggested-card">
-              <img src={user.profilePicture} alt={user.name} className="suggested-img" />
+              <img
+                src={user.profilePicture?.trim()
+                  ? user.profilePicture
+                  : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=ff5864&color=fff&size=128`}
+                alt={user.name}
+                className="suggested-img"
+              />
               <h3>{user.name}</h3>
               <p className="suggested-location">{user.location}</p>
 

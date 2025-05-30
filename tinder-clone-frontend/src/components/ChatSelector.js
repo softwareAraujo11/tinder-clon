@@ -25,7 +25,9 @@ const ChatSelector = () => {
           uuid: contact.uuid,
           name: contact.name,
           location: contact.location,
-          profilePicture: contact.profilePicture || '',
+          profilePicture: contact.profilePicture?.trim()
+            ? contact.profilePicture
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(contact.name)}&background=ff5864&color=fff&size=128`,
         }));
 
         setContacts(formatted);

@@ -9,6 +9,7 @@ const Navbar = () => {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [userUuid, setUserUuid] = useState(null);
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
@@ -16,11 +17,19 @@ const Navbar = () => {
 
       if (currentUser) {
         try {
-          const res = await fetch('http://localhost:3000/api/users');
-          const users = await res.json();
-          const foundUser = users.find((u) => u.email === currentUser.email);
-          if (foundUser) setUserUuid(foundUser.uuid);
-        } catch (error) {}
+          const res = await fetch(`http://localhost:3000/api/users/email/${currentUser.email}`);
+          const data = await res.json();
+
+          if (data) {
+            setUserUuid(data.uuid);
+            setUserName(data.name || currentUser.email);
+          } else {
+            setUserName(currentUser.email);
+          }
+        } catch (error) {
+          console.error('Error al obtener datos del usuario:', error);
+          setUserName(currentUser.email);
+        }
       }
     });
 
@@ -43,7 +52,7 @@ const Navbar = () => {
           {userUuid && (
             <Link className="nav-link" to={`/chat?userId=${userUuid}`}>Chat</Link>
           )}
-          <span className="nav-user">{user.displayName || user.email}</span>
+          <span className="nav-user">{userName}</span>
           <button className="nav-button" onClick={handleLogout}>Salir</button>
         </>
       ) : (

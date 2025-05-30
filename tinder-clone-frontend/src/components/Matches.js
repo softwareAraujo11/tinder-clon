@@ -28,7 +28,9 @@ const Matches = () => {
           uuid: user.uuid,
           name: user.name,
           location: user.location,
-          profilePicture: user.profilePicture || '',
+          profilePicture: user.profilePicture?.trim()
+            ? user.profilePicture
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=ff5864&color=fff&size=128`,
         }));
 
         setMatches(formatted);

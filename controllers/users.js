@@ -4,11 +4,16 @@ const Swipe = require('../models/Swipe');
 
 const registerOrUpdateUser = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, profilePicture } = req.body;
     let user = await User.findOne({ email });
 
     if (user) {
-      user.set(req.body);
+      const updatedData = { ...req.body };
+      if (!profilePicture) {
+        delete updatedData.profilePicture;
+      }
+
+      user.set(updatedData);
     } else {
       user = new User(req.body);
     }
