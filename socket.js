@@ -1,44 +1,53 @@
 // socket.js
 const Message = require('./models/Message');
-const Match = require('./models/Match');
+const User = require('./models/User');
 
-module.exports = (io) => {
+function configureSocket(io) {
   io.on('connection', (socket) => {
+    console.log('Usuario conectado vía socket:', socket.id);
 
-    socket.on('join_room', ({ userUuid1, userUuid2 }) => {
-      const roomId = [userUuid1, userUuid2].sort().join('_');
+    socket.on('joinRoom', (roomId) => {
       socket.join(roomId);
+      console.log(`Usuario unido a la sala: ${roomId}`);
     });
 
     socket.on('sendMessage', async ({ senderUuid, receiverUuid, content }) => {
-      if (!senderUuid || !receiverUuid || !content) {
-        socket.emit('message_error', { message: 'Faltan datos para enviar el mensaje.' });
-        return;
-      }
-
-      const matchExists = await Match.findOne({
-        $or: [
-          { user1Uuid: senderUuid, user2Uuid: receiverUuid },
-          { user1Uuid: receiverUuid, user2Uuid: senderUuid }
-        ]
-      });
-
-      if (!matchExists) {
-        socket.emit('message_error', { message: 'No tienes un match con este usuario.' });
-        return;
-      }
-
       try {
-        const newMessage = new Message({ senderUuid, receiverUuid, content });
+        const sender = await User.findOne({ uuid: senderUuid });
+        const receiver = await User.findOne({ uuid: receiverUuid });
+
+        if (!sender || !receiver) {
+          socket.emit('message_error', { message: 'Remitente o receptor no encontrado' });
+          return;
+        }
+
+        const newMessage = new Message({
+          senderUuid,
+          receiverUuid,
+          content,
+        });
+
         const savedMessage = await newMessage.save();
 
         const roomId = [senderUuid, receiverUuid].sort().join('_');
-        io.to(roomId).emit('receive_message', savedMessage);
+
+        io.to(roomId).emit('receive_message', {
+          _id: savedMessage._id,
+          senderUuid,
+          receiverUuid,
+          content,
+          timestamp: savedMessage.timestamp,
+        });
       } catch (error) {
-        socket.emit('message_error', { message: 'Error al guardar el mensaje.' });
+        console.error('Error al guardar o emitir mensaje:', error);
+        socket.emit('message_error', { message: 'Error interno del servidor' });
       }
     });
 
-    socket.on('disconnect', () => {});
+    socket.on('disconnect', () => {
+      console.log('Usuario desconectado:', socket.id);
+    });
   });
-};
+}
+
+module.exports = configureSocket;

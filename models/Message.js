@@ -10,13 +10,11 @@ const messageSchema = new mongoose.Schema({
   },
   senderUuid: {
     type: String,
-    required: true,
-    ref: 'User'
+    required: true
   },
   receiverUuid: {
     type: String,
-    required: true,
-    ref: 'User'
+    required: true
   },
   content: {
     type: String,

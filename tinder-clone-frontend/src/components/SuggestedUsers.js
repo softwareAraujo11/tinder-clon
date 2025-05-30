@@ -11,16 +11,27 @@ const SuggestedUsers = () => {
       const currentUser = auth.currentUser;
       if (!currentUser) return;
 
-      const resUsers = await fetch('http://localhost:3000/api/users');
-      const users = await resUsers.json();
-      const mongoUser = users.find((u) => u.email === currentUser.email);
-      if (!mongoUser) return;
+      try {
+        const resUsers = await fetch('http://localhost:3000/api/users');
+        const users = await resUsers.json();
+        const mongoUser = users.find((u) => u.email === currentUser.email);
+        if (!mongoUser) return;
 
-      setCurrentUserUuid(mongoUser.uuid);
+        setCurrentUserUuid(mongoUser.uuid);
 
-      const res = await fetch(`http://localhost:3000/api/users/suggested/${mongoUser.uuid}`);
-      const data = await res.json();
-      setSuggestedUsers(data);
+        const res = await fetch(`http://localhost:3000/api/users/suggested/${mongoUser.uuid}`);
+        const data = await res.json();
+
+        if (Array.isArray(data)) {
+          setSuggestedUsers(data);
+        } else {
+          console.error('Respuesta inesperada del backend:', data);
+          setSuggestedUsers([]);
+        }
+      } catch (error) {
+        console.error('Error al obtener sugerencias:', error);
+        setSuggestedUsers([]);
+      }
     };
 
     fetchSuggestedUsers();
@@ -43,25 +54,27 @@ const SuggestedUsers = () => {
       const data = await res.json();
 
       setSuggestedUsers((prev) => prev.filter((user) => user.uuid !== targetUuid));
-    } catch (error) {}
+    } catch (error) {
+      console.error('Error al enviar like:', error);
+    }
   };
 
   return (
     <div>
       <h2>Usuarios sugeridos</h2>
-      {suggestedUsers.length === 0 ? (
-        <p>No hay más sugerencias por ahora.</p>
-      ) : (
+      {Array.isArray(suggestedUsers) && suggestedUsers.length > 0 ? (
         <ul>
           {suggestedUsers.map((user) => (
             <li key={user.uuid}>
-              <img src={user.profilePicture} alt={user.name} />
+              <img src={user.profilePicture} alt={user.name} width={50} />
               <strong>{user.name}</strong> - {user.location}
               <br />
               <button onClick={() => handleLike(user.uuid)}>❤️ Me gusta</button>
             </li>
           ))}
         </ul>
+      ) : (
+        <p>No hay más sugerencias por ahora.</p>
       )}
     </div>
   );

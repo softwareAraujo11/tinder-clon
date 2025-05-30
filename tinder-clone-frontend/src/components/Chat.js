@@ -35,7 +35,7 @@ const Chat = () => {
       setMessages(data);
 
       const roomId = [current.uuid, other.uuid].sort().join('_');
-      socket.emit('join_room', { userUuid1: current.uuid, userUuid2: other.uuid });
+      socket.emit('joinRoom', roomId);
     };
 
     fetchData();
@@ -73,11 +73,13 @@ const Chat = () => {
     <div>
       <h2>Chat con {receiver.name}</h2>
       <div>
-        {messages.map((msg, i) => (
-          <div key={msg._id || i}>
-            <strong>{msg.senderUuid === currentUser.uuid ? 'Tú' : receiver.name}:</strong> {msg.content}
-          </div>
-        ))}
+        {messages.map((msg, i) =>
+          msg && msg.senderUuid && msg.content ? (
+            <div key={msg._id || i}>
+              <strong>{msg.senderUuid === currentUser.uuid ? 'Tú' : receiver.name}:</strong> {msg.content}
+            </div>
+          ) : null
+        )}
         <div ref={bottomRef} />
       </div>
       <input

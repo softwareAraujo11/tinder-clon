@@ -15,6 +15,7 @@ export const syncUserWithBackend = async (firebaseUser) => {
       name: displayName || 'New User',
       email: email,
       password: uid,
+      uuid: uid,
       profilePicture: photoURL || '',
       age: null,
       gender: '',
@@ -22,7 +23,7 @@ export const syncUserWithBackend = async (firebaseUser) => {
       interests: []
     };
 
-    const createRes = await fetch('http://localhost:3000/api/users', {
+    const createRes = await fetch('http://localhost:3000/api/users/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newUser)

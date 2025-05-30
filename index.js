@@ -1,21 +1,36 @@
 // index.js
 const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
+const mongoose = require('mongoose');
 const cors = require('cors');
-const connectDB = require('./config/database');
-
-const usersRoutes = require('./routes/users');
-const authRoutes = require('./routes/auth');
-const swipesRoutes = require('./routes/swipes');
-const matchesRoutes = require('./routes/matches');
-const messagesRoutes = require('./routes/messages');
-
-const socketHandler = require('./socket');
+const http = require('http');
+require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
 
+app.use(cors());
+app.use(express.json());
+
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/tinder-clone', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('✅ Conectado a MongoDB'))
+.catch(err => console.error('❌ Error al conectar a MongoDB:', err));
+
+const userRoutes = require('./routes/users');
+const swipeRoutes = require('./routes/swipes');
+const matchRoutes = require('./routes/matches');
+const messageRoutes = require('./routes/messages');
+const authRoutes = require('./routes/auth');
+
+app.use('/api/users', userRoutes);
+app.use('/api/swipes', swipeRoutes);
+app.use('/api/matches', matchRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/auth', authRoutes);
+
+const { Server } = require('socket.io');
 const io = new Server(server, {
   cors: {
     origin: '*',
@@ -23,31 +38,10 @@ const io = new Server(server, {
   }
 });
 
-const PORT = 3000;
+const configureSocket = require('./socket');
+configureSocket(io);
 
-connectDB();
-
-const allowedOrigins = ['http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003'];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost')) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-}));
-
-app.use(express.json());
-
-app.use('/api/users', usersRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/swipes', swipesRoutes);
-app.use('/api/matches', matchesRoutes);
-app.use('/api/messages', messagesRoutes);
-
-socketHandler(io);
-
-server.listen(PORT);
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+});

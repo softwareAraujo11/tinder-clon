@@ -10,12 +10,10 @@ const swipeSchema = new mongoose.Schema({
   },
   originUserUuid: {
     type: String,
-    ref: 'User',
     required: true
   },
   targetUserUuid: {
     type: String,
-    ref: 'User',
     required: true
   },
   action: {

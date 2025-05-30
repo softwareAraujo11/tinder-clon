@@ -14,6 +14,7 @@ const CompleteProfile = () => {
   const [interests, setInterests] = useState([]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [uuid, setUuid] = useState('');
   const [error, setError] = useState('');
 
   const interestOptions = ['fútbol', 'música', 'viajes', 'cine', 'lectura', 'tecnología'];
@@ -26,6 +27,7 @@ const CompleteProfile = () => {
       setName(currentUser.displayName || '');
       setEmail(currentUser.email || '');
       setPassword(currentUser.uid || '');
+      setUuid(currentUser.uid || '');
     }
   }, []);
 
@@ -47,11 +49,12 @@ const CompleteProfile = () => {
       interests,
       email,
       password,
+      uuid,
       profilePicture: user?.photoURL || '',
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/users', {
+      const response = await fetch('http://localhost:3000/api/users/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

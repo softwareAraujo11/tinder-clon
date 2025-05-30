@@ -19,9 +19,8 @@ const AppRoutes = () => {
         navigate('/login');
       } else {
         try {
-          const res = await fetch(`http://localhost:3000/api/users?email=${user.email}`);
-          const users = await res.json();
-          const mongoUser = users.find((u) => u.email === user.email);
+          const res = await fetch(`http://localhost:3000/api/users/email/${user.email}`);
+          const mongoUser = await res.json();
 
           const isProfileComplete =
             mongoUser &&

@@ -10,15 +10,13 @@ const matchSchema = new mongoose.Schema({
   },
   user1Uuid: {
     type: String,
-    ref: 'User',
     required: true
   },
   user2Uuid: {
     type: String,
-    ref: 'User',
     required: true
   },
-  createdAt: {
+  timestamp: {
     type: Date,
     default: Date.now
   }
