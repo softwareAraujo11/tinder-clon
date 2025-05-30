@@ -1,4 +1,4 @@
-// components/AuthMenu.js
+// components//AuthMenu.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
@@ -34,7 +34,7 @@ const AuthMenu = () => {
       <h2>Welcome to Tinder Clone</h2>
       <button onClick={handleGoogleLogin}>Login with Google</button>
       <br /><br />
-      <button onClick={() => navigate('/login')}>Login with Email</button>
+      <button onClick={() => navigate('/login-email')}>Login with Email</button>
       <button onClick={() => navigate('/register')}>Register with Email</button>
     </div>
   );

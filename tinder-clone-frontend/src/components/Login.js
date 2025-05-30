@@ -17,38 +17,39 @@ const Login = () => {
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-
       const res = await syncUserWithBackend(userCredential.user);
 
       if (res?.exists) {
-        navigate('/chat');
+        navigate('/app');
       } else {
         navigate('/complete-profile', { state: { user: res.user } });
       }
     } catch (err) {
-      setError(err.message);
+      setError('Error al iniciar sesión: ' + err.message);
     }
   };
 
   return (
     <div>
-      <h2>Login with Email</h2>
+      <h2>Iniciar sesión con Email</h2>
       <form onSubmit={handleLogin}>
         <input
           type="email"
           placeholder="Email"
           onChange={(e) => setEmail(e.target.value)}
           value={email}
+          required
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Contraseña"
           onChange={(e) => setPassword(e.target.value)}
           value={password}
+          required
         />
-        <button type="submit">Login</button>
+        <button type="submit">Iniciar sesión</button>
       </form>
-      {error && <p>{error}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 };
