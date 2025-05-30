@@ -10,8 +10,8 @@
   align-items: center;
   padding: 0.8rem 1rem;
   z-index: 100;
-  font-family: sans-serif;
-  box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', sans-serif;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
 }
 
 .nav-link {
@@ -27,9 +27,17 @@
 }
 
 .nav-user {
-  font-size: 0.85rem;
-  color: #333;
-  margin-left: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  color: #d9465a;
+  padding: 0.4rem 0.9rem;
+  border-radius: 1rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.nav-user:hover {
+  background-color: #ffe5ea;
+  color: #b91c1c;
 }
 
 .nav-button {

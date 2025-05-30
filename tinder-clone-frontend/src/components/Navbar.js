@@ -34,7 +34,7 @@ const Navbar = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     await auth.signOut();
@@ -52,7 +52,7 @@ const Navbar = () => {
           {userUuid && (
             <Link className="nav-link" to={`/chat?userId=${userUuid}`}>Chat</Link>
           )}
-          <span className="nav-user">{userName}</span>
+          <Link className="nav-user" to="/profile">{userName}</Link>
           <button className="nav-button" onClick={handleLogout}>Salir</button>
         </>
       ) : (
