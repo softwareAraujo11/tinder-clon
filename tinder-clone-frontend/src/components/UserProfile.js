@@ -70,13 +70,13 @@ const UserProfile = () => {
       });
 
       if (res.ok) {
-        toast.success('✅ Perfil actualizado correctamente.');
+        toast.success('Perfil actualizado correctamente.');
       } else {
-        toast.error('❌ Error al actualizar el perfil.');
+        toast.error('Error al actualizar el perfil.');
       }
     } catch (error) {
       console.error('Error al actualizar perfil:', error);
-      toast.error('❌ Error al actualizar el perfil.');
+      toast.error('Error al actualizar el perfil.');
     }
   };
 

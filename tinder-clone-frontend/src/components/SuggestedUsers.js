@@ -43,7 +43,7 @@ const SuggestedUsers = ({ refreshTrigger }) => {
 
   useEffect(() => {
     fetchSuggestedUsers();
-  }, [refreshTrigger]); // se actualiza cuando cambia refreshTrigger
+  }, [refreshTrigger]);
 
   const handleLike = async (targetUuid) => {
     if (!currentUserUuid || !targetUuid) return;

@@ -28,7 +28,7 @@ const Matches = ({ onMatchRemoved }) => {
       const matchedUsers = await res.json();
 
       if (!matchedUsers.length && !toastShown.current) {
-        toast.info('Aún no tienes matches. Sigue buscando 👀');
+        toast.info('Aún no tienes matches. Sigue buscando');
         toastShown.current = true;
       }
 

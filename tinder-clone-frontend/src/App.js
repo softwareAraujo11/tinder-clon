@@ -9,7 +9,6 @@ import {
 } from 'react-router-dom';
 
 import { auth } from './services/firebase';
-
 import Navbar from './components/Navbar';
 import SuggestedUsers from './components/SuggestedUsers';
 import Matches from './components/Matches';
@@ -21,8 +20,11 @@ import Login from './components/Login';
 import Register from './components/Register';
 import UserProfile from './components/UserProfile';
 
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:3000');
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -74,6 +76,20 @@ const AppRoutes = () => {
 
     return () => unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    socket.on('match:inactiveReminder', (data) => {
+      if (data?.name) {
+        toast.info(`No has chateado con ${data.name}. ¡Envíale un mensaje!`, {
+          position: 'bottom-center',
+        });
+      }
+    });
+
+    return () => {
+      socket.off('match:inactiveReminder');
+    };
+  }, []);
 
   const handleMatchRemoved = () => {
     setRefreshTrigger((prev) => prev + 1);

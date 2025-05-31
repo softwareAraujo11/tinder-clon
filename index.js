@@ -15,8 +15,8 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/tinder-clon
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log('✅ Conectado a MongoDB'))
-.catch(err => console.error('❌ Error al conectar a MongoDB:', err));
+.then(() => console.log('Conectado a MongoDB'))
+.catch(err => console.error('Error al conectar a MongoDB:', err));
 
 const userRoutes = require('./routes/users');
 const swipeRoutes = require('./routes/swipes');
@@ -40,6 +40,9 @@ const io = new Server(server, {
 
 const configureSocket = require('./socket');
 configureSocket(io);
+
+const notifyInactiveMatches = require('./cron/notifyInactiveMatches');
+notifyInactiveMatches(io); 
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

@@ -1,4 +1,4 @@
-// socket.js
+// components/socket.js
 const Message = require('./models/Message');
 
 function configureSocket(io) {
