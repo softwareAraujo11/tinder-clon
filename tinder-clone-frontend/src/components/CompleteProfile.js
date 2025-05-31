@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../services/firebase';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../styles/CompleteProfile.css';
 
 const CompleteProfile = () => {
@@ -16,7 +18,6 @@ const CompleteProfile = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [uuid, setUuid] = useState('');
-  const [error, setError] = useState('');
 
   const interestOptions = [
     'Fútbol', 'Música', 'Viajes', 'Cine', 'Lectura', 'Tecnología', 'Moda', 'Videojuegos', 'Baile'
@@ -71,9 +72,10 @@ const CompleteProfile = () => {
 
       if (!response.ok) throw new Error('Error al registrar el perfil');
 
+      toast.success('Perfil completado con éxito');
       navigate('/app');
     } catch (err) {
-      setError('No se pudo completar el perfil.');
+      toast.error('No se pudo completar el perfil');
     }
   };
 
@@ -82,7 +84,6 @@ const CompleteProfile = () => {
       <div className="profile-card">
         <form onSubmit={handleSubmit} className="profile-form">
           <h2>Completa tu perfil</h2>
-          {error && <p className="error-message">{error}</p>}
 
           <label>Nombre:</label>
           <input value={name} onChange={(e) => setName(e.target.value)} required />

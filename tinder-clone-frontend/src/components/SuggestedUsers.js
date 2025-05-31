@@ -1,6 +1,8 @@
 // components/SuggestedUsers.js
 import React, { useEffect, useState } from 'react';
 import { auth } from '../services/firebase';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../styles/SuggestedUsers.css';
 
 const SuggestedUsers = () => {
@@ -25,13 +27,18 @@ const SuggestedUsers = () => {
 
         if (Array.isArray(data)) {
           setSuggestedUsers(data);
+          if (data.length === 0) {
+            toast.info('No hay más sugerencias por ahora.', { position: 'top-center' });
+          }
         } else {
           console.error('Respuesta inesperada del backend:', data);
           setSuggestedUsers([]);
+          toast.error('Error inesperado al obtener sugerencias.');
         }
       } catch (error) {
         console.error('Error al obtener sugerencias:', error);
         setSuggestedUsers([]);
+        toast.error('No se pudieron cargar las sugerencias.');
       }
     };
 
@@ -42,7 +49,7 @@ const SuggestedUsers = () => {
     if (!currentUserUuid || !targetUuid) return;
 
     try {
-      await fetch('http://localhost:3000/api/swipes', {
+      const res = await fetch('http://localhost:3000/api/swipes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -52,9 +59,22 @@ const SuggestedUsers = () => {
         })
       });
 
-      setSuggestedUsers((prev) => prev.filter((user) => user.uuid !== targetUuid));
+      const result = await res.json();
+
+      if (res.ok) {
+        setSuggestedUsers((prev) => prev.filter((user) => user.uuid !== targetUuid));
+
+        if (result.match) {
+          toast.success('¡Es un match! 🎉 Ahora pueden chatear.', { position: 'top-center' });
+        } else {
+          toast.info('¡Like enviado!', { position: 'top-center' });
+        }
+      } else {
+        toast.error('No se pudo registrar el like.');
+      }
     } catch (error) {
       console.error('Error al enviar like:', error);
+      toast.error('Error al enviar like.');
     }
   };
 

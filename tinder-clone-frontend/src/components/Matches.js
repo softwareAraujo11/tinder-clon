@@ -1,11 +1,15 @@
 // components/Matches.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../services/firebase';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../styles/Matches.css';
 
 const Matches = () => {
   const [matches, setMatches] = useState([]);
+  const toastShown = useRef(false); // 🔑
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,10 +22,18 @@ const Matches = () => {
         const users = await resUsers.json();
 
         const mongoUser = users.find((u) => u.email === firebaseUser.email);
-        if (!mongoUser || !mongoUser.uuid) return;
+        if (!mongoUser || !mongoUser.uuid) {
+          toast.error('No se pudo obtener el usuario autenticado.');
+          return;
+        }
 
         const res = await fetch(`http://localhost:3000/api/matches?userUuid=${mongoUser.uuid}`);
         const matchedUsers = await res.json();
+
+        if (!matchedUsers.length && !toastShown.current) {
+          toast.info('Aún no tienes matches. Sigue buscando 👀');
+          toastShown.current = true;
+        }
 
         const formatted = matchedUsers.map((user) => ({
           matchId: user._id,
@@ -36,6 +48,7 @@ const Matches = () => {
         setMatches(formatted);
       } catch (error) {
         console.error('Error al obtener matches:', error);
+        toast.error('No se pudieron cargar tus matches.');
       }
     };
 
@@ -45,9 +58,7 @@ const Matches = () => {
   return (
     <div className="matches-container">
       <h2 className="matches-title">Tus matches</h2>
-      {matches.length === 0 ? (
-        <p className="no-matches">Aún no tienes matches.</p>
-      ) : (
+      {matches.length > 0 && (
         <div className="matches-grid">
           {matches.map((match) => (
             <div key={match.matchId} className="match-card">

@@ -3,24 +3,24 @@ import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../styles/Register.css';
 
 const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError('');
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      alert('Usuario registrado: ' + userCredential.user.email);
+      toast.success(`Usuario registrado: ${userCredential.user.email}`);
       navigate('/complete-profile');
     } catch (err) {
-      setError('Error al registrarse: ' + err.message);
+      toast.error('Error al registrarse: ' + err.message);
     }
   };
 
@@ -50,7 +50,6 @@ const Register = () => {
           />
           <button type="submit" className="auth-button">Registrarse</button>
         </form>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
         <p style={{ marginTop: '1rem' }}>
           ¿Ya tienes cuenta?{' '}
           <span

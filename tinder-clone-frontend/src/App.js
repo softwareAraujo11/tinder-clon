@@ -11,7 +11,11 @@ import AuthMenu from './components/AuthMenu';
 import CompleteProfile from './components/CompleteProfile';
 import Login from './components/Login';
 import Register from './components/Register';
-import UserProfile from './components/UserProfile'; // Ruta nueva
+import UserProfile from './components/UserProfile';
+
+// Toastify
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -78,9 +82,10 @@ const AppRoutes = () => {
           <Route path="/matches" element={<Matches />} />
           <Route path="/chat" element={<ChatSelector />} />
           <Route path="/chat/:userUuid" element={<Chat />} />
-          <Route path="/profile" element={<UserProfile />} /> 
+          <Route path="/profile" element={<UserProfile />} />
         </Routes>
       </div>
+      <ToastContainer position="bottom-center" autoClose={3000} hideProgressBar />
     </>
   );
 };

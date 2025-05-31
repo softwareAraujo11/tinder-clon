@@ -3,6 +3,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { useParams } from 'react-router-dom';
 import { auth } from '../services/firebase';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../styles/Chat.css';
 
 const socket = io('http://localhost:3000');
@@ -27,7 +29,10 @@ const Chat = () => {
         const current = users.find((u) => u.email === firebaseUser.email);
         const other = users.find((u) => u.uuid === userUuid);
 
-        if (!current || !other) return;
+        if (!current || !other) {
+          toast.error('Error: usuarios no encontrados');
+          return;
+        }
 
         setCurrentUser(current);
         setReceiver(other);
@@ -36,6 +41,7 @@ const Chat = () => {
         const data = await res.json();
         setMessages(data);
       } catch (error) {
+        toast.error('Error al cargar el chat');
         console.error('Error al cargar chat:', error);
       }
     };
@@ -53,13 +59,21 @@ const Chat = () => {
   useEffect(() => {
     const handleReceive = (message) => {
       setMessages((prev) => [...prev, message]);
+      if (message.senderUuid !== currentUser?.uuid) {
+        toast.info(`Nuevo mensaje de ${receiver?.name}`);
+      }
     };
 
     socket.on('receive_message', handleReceive);
+    socket.on('disconnect', () => {
+      toast.warn('Conexión perdida con el servidor');
+    });
+
     return () => {
       socket.off('receive_message', handleReceive);
+      socket.off('disconnect');
     };
-  }, []);
+  }, [currentUser, receiver]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -68,13 +82,18 @@ const Chat = () => {
   const handleSend = () => {
     if (!newMessage.trim() || !currentUser || !receiver) return;
 
-    socket.emit('sendMessage', {
-      senderUuid: currentUser.uuid,
-      receiverUuid: receiver.uuid,
-      content: newMessage.trim(),
-    });
+    try {
+      socket.emit('sendMessage', {
+        senderUuid: currentUser.uuid,
+        receiverUuid: receiver.uuid,
+        content: newMessage.trim(),
+      });
 
-    setNewMessage('');
+      setNewMessage('');
+      toast.success('Mensaje enviado');
+    } catch (err) {
+      toast.error('No se pudo enviar el mensaje');
+    }
   };
 
   if (!currentUser || !receiver) return <p>Cargando chat...</p>;

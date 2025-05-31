@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../services/firebase';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../styles/ChatSelector.css';
 
 const ChatSelector = () => {
@@ -16,10 +18,17 @@ const ChatSelector = () => {
         const resUser = await fetch(`http://localhost:3000/api/users/email/${firebaseUser.email}`);
         const mongoUser = await resUser.json();
 
-        if (!mongoUser || !mongoUser.uuid) return;
+        if (!mongoUser || !mongoUser.uuid) {
+          toast.error('No se encontró el usuario autenticado.');
+          return;
+        }
 
         const resMessages = await fetch(`http://localhost:3000/api/messages/conversations/${mongoUser.uuid}`);
         const conversations = await resMessages.json();
+
+        if (!conversations.length) {
+          toast.info('No has iniciado conversaciones aún.');
+        }
 
         const formatted = conversations.map((contact) => ({
           uuid: contact.uuid,
@@ -33,6 +42,7 @@ const ChatSelector = () => {
         setContacts(formatted);
       } catch (error) {
         console.error('Error al cargar contactos del chat:', error);
+        toast.error('No se pudieron cargar los contactos del chat.');
       }
     });
 

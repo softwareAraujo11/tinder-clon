@@ -1,6 +1,8 @@
 // components/UserProfile.js
 import React, { useEffect, useState } from 'react';
 import { auth } from '../services/firebase';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../styles/UserProfile.css';
 
 const UserProfile = () => {
@@ -23,6 +25,7 @@ const UserProfile = () => {
       try {
         const res = await fetch(`http://localhost:3000/api/users/email/${currentUser.email}`);
         const data = await res.json();
+
         setUuid(data.uuid);
         setFormData({
           name: data.name || '',
@@ -32,6 +35,7 @@ const UserProfile = () => {
         });
       } catch (error) {
         console.error('Error al cargar perfil:', error);
+        toast.error('No se pudo cargar tu perfil.');
       }
     };
 
@@ -53,7 +57,10 @@ const UserProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!uuid) return;
+    if (!uuid) {
+      toast.error('No se encontró tu usuario.');
+      return;
+    }
 
     try {
       const res = await fetch(`http://localhost:3000/api/users/${uuid}`, {
@@ -63,12 +70,13 @@ const UserProfile = () => {
       });
 
       if (res.ok) {
-        alert('Perfil actualizado con éxito.');
+        toast.success('✅ Perfil actualizado correctamente.');
       } else {
-        alert('Error al actualizar perfil.');
+        toast.error('❌ Error al actualizar el perfil.');
       }
     } catch (error) {
       console.error('Error al actualizar perfil:', error);
+      toast.error('❌ Error al actualizar el perfil.');
     }
   };
 

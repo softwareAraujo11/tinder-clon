@@ -4,21 +4,23 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { syncUserWithBackend } from '../utils/syncUser';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../styles/Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const res = await syncUserWithBackend(userCredential.user);
+
+      toast.success('Inicio de sesión exitoso');
 
       if (res?.exists) {
         navigate('/app');
@@ -26,7 +28,7 @@ const Login = () => {
         navigate('/complete-profile', { state: { user: res.user } });
       }
     } catch (err) {
-      setError('Error al iniciar sesión: ' + err.message);
+      toast.error('Error al iniciar sesión: ' + err.message);
     }
   };
 
@@ -56,7 +58,6 @@ const Login = () => {
           />
           <button type="submit" className="auth-button">Iniciar sesión</button>
         </form>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
         <p style={{ marginTop: '1rem' }}>
           ¿No tienes cuenta?{' '}
           <span
