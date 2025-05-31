@@ -1,7 +1,15 @@
 // src/App.js
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+  useLocation,
+} from 'react-router-dom';
+
 import { auth } from './services/firebase';
+
 import Navbar from './components/Navbar';
 import SuggestedUsers from './components/SuggestedUsers';
 import Matches from './components/Matches';
@@ -13,7 +21,6 @@ import Login from './components/Login';
 import Register from './components/Register';
 import UserProfile from './components/UserProfile';
 
-// Toastify
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -22,6 +29,7 @@ const AppRoutes = () => {
   const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [profileComplete, setProfileComplete] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -67,19 +75,23 @@ const AppRoutes = () => {
     return () => unsubscribe();
   }, [navigate]);
 
+  const handleMatchRemoved = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
     <>
-      {isAuthenticated && profileComplete && !['/login', '/login-email', '/register'].includes(location.pathname) && (
-        <Navbar />
-      )}
+      {isAuthenticated &&
+        profileComplete &&
+        !['/login', '/login-email', '/register'].includes(location.pathname) && <Navbar />}
       <div>
         <Routes>
           <Route path="/login" element={<AuthMenu />} />
           <Route path="/login-email" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/complete-profile" element={<CompleteProfile />} />
-          <Route path="/app" element={<SuggestedUsers />} />
-          <Route path="/matches" element={<Matches />} />
+          <Route path="/app" element={<SuggestedUsers refreshTrigger={refreshTrigger} />} />
+          <Route path="/matches" element={<Matches onMatchRemoved={handleMatchRemoved} />} />
           <Route path="/chat" element={<ChatSelector />} />
           <Route path="/chat/:userUuid" element={<Chat />} />
           <Route path="/profile" element={<UserProfile />} />

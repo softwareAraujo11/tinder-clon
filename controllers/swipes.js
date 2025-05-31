@@ -42,4 +42,20 @@ const registerSwipe = async (req, res) => {
   }
 };
 
-module.exports = { registerSwipe };
+const removeSwipe = async (req, res) => {
+  try {
+    const { originUserUuid, targetUserUuid } = req.body;
+
+    if (!originUserUuid || !targetUserUuid) {
+      return res.status(400).json({ error: 'Faltan datos requeridos' });
+    }
+
+    await Swipe.deleteOne({ originUserUuid, targetUserUuid, action: 'like' });
+
+    res.status(200).json({ message: 'Like eliminado correctamente' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar el like' });
+  }
+};
+
+module.exports = { registerSwipe, removeSwipe };

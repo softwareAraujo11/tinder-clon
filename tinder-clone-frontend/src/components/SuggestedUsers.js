@@ -5,45 +5,45 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../styles/SuggestedUsers.css';
 
-const SuggestedUsers = () => {
+const SuggestedUsers = ({ refreshTrigger }) => {
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [currentUserUuid, setCurrentUserUuid] = useState(null);
 
-  useEffect(() => {
-    const fetchSuggestedUsers = async () => {
-      const currentUser = auth.currentUser;
-      if (!currentUser) return;
+  const fetchSuggestedUsers = async () => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return;
 
-      try {
-        const resUsers = await fetch('http://localhost:3000/api/users');
-        const users = await resUsers.json();
-        const mongoUser = users.find((u) => u.email === currentUser.email);
-        if (!mongoUser) return;
+    try {
+      const resUsers = await fetch('http://localhost:3000/api/users');
+      const users = await resUsers.json();
+      const mongoUser = users.find((u) => u.email === currentUser.email);
+      if (!mongoUser) return;
 
-        setCurrentUserUuid(mongoUser.uuid);
+      setCurrentUserUuid(mongoUser.uuid);
 
-        const res = await fetch(`http://localhost:3000/api/users/suggested/${mongoUser.uuid}`);
-        const data = await res.json();
+      const res = await fetch(`http://localhost:3000/api/users/suggested/${mongoUser.uuid}`);
+      const data = await res.json();
 
-        if (Array.isArray(data)) {
-          setSuggestedUsers(data);
-          if (data.length === 0) {
-            toast.info('No hay más sugerencias por ahora.', { position: 'top-center' });
-          }
-        } else {
-          console.error('Respuesta inesperada del backend:', data);
-          setSuggestedUsers([]);
-          toast.error('Error inesperado al obtener sugerencias.');
+      if (Array.isArray(data)) {
+        setSuggestedUsers(data);
+        if (data.length === 0) {
+          toast.info('No hay más sugerencias por ahora.', { position: 'top-center' });
         }
-      } catch (error) {
-        console.error('Error al obtener sugerencias:', error);
+      } else {
+        console.error('Respuesta inesperada del backend:', data);
         setSuggestedUsers([]);
-        toast.error('No se pudieron cargar las sugerencias.');
+        toast.error('Error inesperado al obtener sugerencias.');
       }
-    };
+    } catch (error) {
+      console.error('Error al obtener sugerencias:', error);
+      setSuggestedUsers([]);
+      toast.error('No se pudieron cargar las sugerencias.');
+    }
+  };
 
+  useEffect(() => {
     fetchSuggestedUsers();
-  }, []);
+  }, [refreshTrigger]); // se actualiza cuando cambia refreshTrigger
 
   const handleLike = async (targetUuid) => {
     if (!currentUserUuid || !targetUuid) return;

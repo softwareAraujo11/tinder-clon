@@ -28,21 +28,21 @@
   gap: 1.5rem;
 }
 
-.match-card {
+.matches-card {
   background-color: white;
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
   width: 220px;
   text-align: center;
   transition: transform 0.2s ease;
 }
 
-.match-card:hover {
+.matches-card:hover {
   transform: translateY(-5px);
 }
 
-.match-img {
+.matches-img {
   width: 100px;
   height: 100px;
   border-radius: 50%;
@@ -50,23 +50,62 @@
   margin-bottom: 1rem;
 }
 
-.chat-button {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #ff5864;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
+.matches-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0;
 }
 
-.chat-button:hover {
+.matches-location {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.matches-button-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0.5rem;
+}
+
+.matches-button {
+  flex: 1;
+  height: 40px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  line-height: 1;
+  min-width: 80px;
+  max-width: 100px;
+  box-sizing: border-box;
+}
+
+.matches-button.chat {
+  background-color: #ff5864;
+  color: white;
+}
+
+.matches-button.chat:hover {
   background-color: #e94a58;
 }
 
-.no-matches {
+.matches-button.dislike {
+  background-color: #ccc;
+  color: #333;
+}
+
+.matches-button.dislike:hover {
+  background-color: #bbb;
+}
+
+.matches-no-matches {
   color: #666;
   margin-top: 2rem;
   font-size: 1.1rem;

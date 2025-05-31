@@ -44,7 +44,29 @@ const getMatchByUsers = async (req, res) => {
   }
 };
 
+const deleteMatch = async (req, res) => {
+  const { userUuid1, userUuid2 } = req.body;
+
+  try {
+    const result = await Match.findOneAndDelete({
+      $or: [
+        { user1Uuid: userUuid1, user2Uuid: userUuid2 },
+        { user1Uuid: userUuid2, user2Uuid: userUuid1 }
+      ]
+    });
+
+    if (!result) {
+      return res.status(404).json({ error: 'No se encontró un match para eliminar.' });
+    }
+
+    res.json({ message: 'Match eliminado con éxito.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar el match.' });
+  }
+};
+
 module.exports = {
   getMatches,
-  getMatchByUsers
+  getMatchByUsers,
+  deleteMatch
 };
